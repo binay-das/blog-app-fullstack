@@ -14,7 +14,7 @@ export default function RegisterPage() {
     let handleSubmit = async (e) => {
         e.preventDefault();
 
-        await fetch('http://localhost:8080', {
+        const response = await fetch('http://localhost:8080/register', {
             method: 'POST',
             body: JSON.stringify({
                 username, password
@@ -23,6 +23,12 @@ export default function RegisterPage() {
                 'Content-Type': 'application/json'
             }
         })
+
+        if (response.status === 200) {
+            alert("RTegistration successfull")
+        } else {
+            alert("Registration failed");
+        }
     }
     return(
         <>
@@ -34,7 +40,7 @@ export default function RegisterPage() {
                     value={username} 
                     onChange={handleUsername} 
                 />
-                
+
                 <input 
                     type="password" 
                     placeholder="password"
