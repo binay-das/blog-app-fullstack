@@ -1,7 +1,10 @@
+import { useState } from "react";
+
 export default function LogInPage() {
 
     const [username, setUsername] = useState('');
     const [password, setPassword] = useState('');
+    const [redirect, setRedirect] = useState(false);
 
     let handleUsername = (e) => {
         setUsername(e.target.value);
@@ -20,14 +23,25 @@ export default function LogInPage() {
             }),
             headers: {
                 'Content-Type': 'application/json'
-            }
+            },
+            credentials: 'include'
         })
 
-        if (response.status === 200) {
-            alert("RTegistration successfull")
+        // if (response.status === 200) {
+        //     alert("Registration successfull");
+        // } else {
+        //     alert("Registration failed");
+        // }
+
+        if (response.ok) {
+            setRedirect(true);
         } else {
-            alert("Registration failed");
+            alert("Registration failed")
         }
+    }
+
+    if (redirect) {
+        return <Navigate to = {'/'}/>
     }
 
 
