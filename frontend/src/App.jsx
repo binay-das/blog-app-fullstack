@@ -2,6 +2,7 @@
 import './App.css'
 import Header from './Header'
 import Layout from './Layout';
+import CreatePost from './pages/CreatePost';
 import IndexPage from './pages/IndexPage';
 import LogInPage from './pages/LogInPage';
 import RegisterPage from './pages/RegisterPage';
@@ -25,6 +26,10 @@ function App() {
           <RegisterPage />
         } />
         </Route>
+
+        <Route path='/create' element={
+          <CreatePost />
+        } />
       </Routes>
 
     </>

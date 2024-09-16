@@ -109,7 +109,7 @@ header nav {
   line-height: 1.4rem;
 }
 
-.login, .regsiter {
+.login, .register {
   max-width: 400px;
   margin: 0 auto;
 }
@@ -133,6 +133,6 @@ button {
   padding: 7px 0;
 }
 
-form h1 {
+.login h1 , .register h1{
   text-align: center;
 }
