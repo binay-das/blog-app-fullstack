@@ -9,7 +9,7 @@ const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const cookieParser = require('cookie-parser');
 const multer = require('multer');
-const uploadMiddleware = require({dest: 'uploads/'});
+const uploadMiddleware = multer({dest: 'uploads/'});
 const fs = require('fs');
 
 app.use(cors({
@@ -20,7 +20,7 @@ app.use(express.json());
 app.use(cookieParser()); 
 
 const salt = bcrypt.genSaltSync(10);
-const secret = '';  
+const secret = 'mySecretKey';  
 
 connectToMongoDB('mongodb://localhost/blog-fullstack')
     .then(() => {
@@ -58,8 +58,17 @@ app.post('/login', async (req, res) => {
         // res.json(passOk);
 
         if (passOk) {
-            const token = jwt.sign({username, id: userDoc._id}, secret, {});
-            res.cookie('token', token).json('ok');
+
+            // Sign asynchronously
+            jwt.sign({username, id: userDoc._id}, secret, (err, token) => {
+                if (err) throw err;
+
+                res.cookie('token', token).json({
+                    id: userDoc._id,
+                    username
+                });
+            });
+            
         } else {
             res.status(400).json({ error: 'Wrong username or password' });
         }
@@ -68,11 +77,11 @@ app.post('/login', async (req, res) => {
 
 app.get('/profile', (req, res) => {
     const {token} = req.cookies;
-    jwt.verify(token, secret, {}, (err, info)=>{
+    jwt.verify(token, secret, (err, info)=>{
         if (err) throw err;
         res.json(info);
     })
-    res.json(req.cookies);
+    // res.json(req.cookies);
 })
 
 app.post('/logout', (req, res) => {

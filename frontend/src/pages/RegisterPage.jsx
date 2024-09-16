@@ -25,7 +25,7 @@ export default function RegisterPage() {
         })
 
         if (response.status === 200) {
-            alert("RTegistration successfull")
+            alert("Registration successfull")
         } else {
             alert("Registration failed");
         }
