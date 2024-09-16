@@ -20,7 +20,7 @@ app.use(express.json());
 app.use(cookieParser()); 
 
 const salt = bcrypt.genSaltSync(10);
-const secret = 'mySecretKey';  
+const secret = '';  
 
 connectToMongoDB('mongodb://localhost/blog-fullstack')
     .then(() => {
