@@ -30,6 +30,10 @@ function App() {
         <Route path='/create' element={
           <CreatePost />
         } />
+        
+        <Route path='/create' element={
+          <CreatePost />
+        } />
       </Routes>
 
     </>
