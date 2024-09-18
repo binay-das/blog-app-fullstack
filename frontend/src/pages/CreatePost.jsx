@@ -40,7 +40,7 @@ export default function CreatePost() {
     }
 
     let handleFile = (e) => {
-        setFiles(e.target.file);
+        setFiles(e.target.files);
     }
 
     let createNewPost = async (e) => {

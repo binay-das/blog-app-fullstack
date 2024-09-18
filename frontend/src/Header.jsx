@@ -46,6 +46,7 @@ export default function Header() {
         {!username && (
           <>
             <Link to="/login">Log In</Link>
+            <Link to='/create'>Create new post</Link>
             <Link to="/register">Register</Link>
           </>
         )}

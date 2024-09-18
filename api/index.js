@@ -9,18 +9,20 @@ const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const cookieParser = require('cookie-parser');
 const multer = require('multer');
-const uploadMiddleware = multer({dest: 'uploads/'});
+const uploadMiddleware = multer({ dest: 'uploads/' });
 const fs = require('fs');
+require('dotenv').config();
 
+// Middleware setup
 app.use(cors({
-    credentials: true, 
+    credentials: true,
     origin: 'http://localhost:5173'
 }));
 app.use(express.json());
-app.use(cookieParser()); 
+app.use(cookieParser());
 
 const salt = bcrypt.genSaltSync(10);
-const secret = '';  
+const secret = process.env.JWT_SECRET;
 
 connectToMongoDB('mongodb://localhost/blog-fullstack')
     .then(() => {
@@ -48,8 +50,9 @@ app.post('/register', async (req, res) => {
 
 app.post('/login', async (req, res) => {
     const { username, password } = req.body;
-    
-        const userDoc = await User.findOne({username});
+
+    try {
+        const userDoc = await User.findOne({ username });
         if (!userDoc) {
             return res.status(400).json({ error: 'User not found' });
         }
@@ -60,7 +63,7 @@ app.post('/login', async (req, res) => {
         if (passOk) {
 
             // Sign asynchronously
-            jwt.sign({username, id: userDoc._id}, secret, (err, token) => {
+            jwt.sign({ username, id: userDoc._id }, secret, (err, token) => {
                 if (err) throw err;
 
                 res.cookie('token', token).json({
@@ -68,16 +71,20 @@ app.post('/login', async (req, res) => {
                     username
                 });
             });
-            
+
         } else {
             res.status(400).json({ error: 'Wrong username or password' });
         }
+    } catch (err) {
+        console.log(`Error in login: ${err}`);
+        res.status(500).json({ error: `Error in login: ${err}` });
+    }
 
 })
 
 app.get('/profile', (req, res) => {
-    const {token} = req.cookies;
-    jwt.verify(token, secret, (err, info)=>{
+    const { token } = req.cookies;
+    jwt.verify(token, secret, (err, info) => {
         if (err) throw err;
         res.json(info);
     })
@@ -89,23 +96,36 @@ app.post('/logout', (req, res) => {
 });
 
 app.post('/post', uploadMiddleware.single('file'), async (req, res) => {
-    const {originalname, path} = req.file;
-    const parts = originalname.split('.');
-    const ext = parts[parts.length - 1];
-    const newPath =  path + '.' + ext;
-    fs.renameSync(path, newPath);
+    try {
+        const { originalname, path } = req.file;
+        const parts = originalname.split('.');
+        const ext = parts[parts.length - 1];
+        const newPath = path + '.' + ext;
+        fs.renameSync(path, newPath);
 
-    const {title, summary, content} = req.body;
+        const coverUrl = `http://localhost:8080/uploads/${path.split('/').pop()}`;
 
-    const postDoc = await Post.create({
-        title, summary, content, cover: newPath
-    });
-    res.json({ext});
+        const { title, summary, content } = req.body;
+
+        const postDoc = await Post.create({
+            // title, summary, content, cover: newPath
+            title, summary, content, cover: coverUrl
+        });
+        res.json({ ext });
+    } catch (err) {
+        console.log(`Error in creating post: ${err}`);
+        res.status(500).json({ error: `Error in creating post: ${err}` });
+    }
 })
 
 app.get('/post', async (req, res) => {
-    const posts = await Post.find();
-    res.json(posts);
+    try {
+        const posts = await Post.find();
+        res.json(posts);
+    } catch (err) {
+        console.log(`Error in fetching posts: ${err}`);
+        res.status(500).json({ error: `Error in fetching posts: ${err}` });
+    }
 })
 const port = 8080;
 app.listen(port, () => {

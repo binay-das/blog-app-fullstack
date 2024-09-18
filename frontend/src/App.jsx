@@ -32,9 +32,9 @@ function App() {
           <CreatePost />
         } />
         
-        <Route path='/create' element={
+        {/* <Route path='/create' element={
           <CreatePost />
-        } />
+        } /> */}
       </Routes>
     </UserContextProvider>
   )

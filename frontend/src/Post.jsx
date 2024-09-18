@@ -4,7 +4,8 @@ export default function Post({title, summary, cover, content, createdAt}) {
     return(
         <div className="post">
           <div className="image">
-          <img src="https://cdn.pixabay.com/photo/2018/05/11/08/34/sky-3389832_1280.jpg" alt="" />
+          {/* <img src="https://cdn.pixabay.com/photo/2018/05/11/08/34/sky-3389832_1280.jpg" alt="" /> */}
+          <img src={cover} alt="Cover Image" />
           </div>
 
           <div className="texts">
