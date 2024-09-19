@@ -47,7 +47,7 @@ body {
   color: #333;
 }
 img {
-  max-width: 100%;
+  /* max-width: 100%; */
 }
 main {
   padding: 10px;
@@ -88,6 +88,11 @@ header nav {
 .post .texts h2 {
   margin: 0;
   font-size: 1.8rem;
+}
+
+.post .image img {
+  width: 250px;
+  height: 250px;
 }
 
 .post .info {
