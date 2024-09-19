@@ -4,7 +4,7 @@ import { UserContext } from "./UserContext";
 
 export default function Header() {
   // const [username, setUsername] = useState(null);
-  const {setUserInfo, userInfo} = useContext(UserContext);
+  const { setUserInfo, userInfo } = useContext(UserContext);
 
   useEffect(() => {
 
