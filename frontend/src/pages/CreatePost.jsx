@@ -53,6 +53,7 @@ export default function CreatePost() {
         const response = await fetch('http://localhost:8080/post', {
             method : "POST",
             body: data,
+            credentials: true
 
         })
 

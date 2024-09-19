@@ -48,7 +48,7 @@ export default function RegisterPage() {
                     onChange={handlePassword} 
                 />
 
-                <button>Log In</button>
+                <button>Register</button>
             </form>
         </>
     );

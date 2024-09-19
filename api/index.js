@@ -14,7 +14,6 @@ const uploadMiddleware = multer({ dest: './uploads' });
 const fs = require('fs');
 // require('dotenv').config();
 const path = require('path');
-// const uploadMiddleware = multer({ dest: path.join(__dirname, 'uploads') });
 
 // Middleware setup
 app.use(cors({
@@ -23,8 +22,7 @@ app.use(cors({
 }));
 app.use(express.json());
 app.use(cookieParser());
-// app.use(express.urlencoded({extended: false}));
-// app.use('/uploads', express.static('uploads'));
+
 app.use('/uploads', express.static(__dirname + '/uploads'));
 
 const salt = bcrypt.genSaltSync(10);
@@ -104,13 +102,11 @@ app.post('/post', uploadMiddleware.single('file'), async (req, res) => {
         // Ensure path uses forward slashes for web URL
         const fileName = newPath.split('/').pop();  // Extract file name
 
-        // Construct the public URL for the uploaded file
         // const coverUrl = `http://localhost:8080/uploads/${fileName}`;
         const coverUrl = `http://localhost:8080/${fileName}`;
 
         const { title, summary, content } = req.body;
 
-        // Save the post with the coverUrl
         const postDoc = await Post.create({
             title, summary, content, cover: coverUrl
         });
@@ -122,6 +118,12 @@ app.post('/post', uploadMiddleware.single('file'), async (req, res) => {
     }
 });
 
+app.put('/post', uploadMiddleware.single('file'), async(req, res) => {
+    let newPath = null;
+    if (req.file) {
+
+    }
+})
 
 
 app.get('/profile', (req, res) => {
@@ -137,106 +139,29 @@ app.post('/logout', (req, res) => {
     res.cookie('token', '').json('ok');
 });
 
-// app.post('/post', uploadMiddleware.single('file'), async (req, res) => {
-//     try {
-//         const { originalname, path } = req.file;
-//         const parts = originalname.split('.');
-//         const ext = parts[parts.length - 1];
-//         const newPath = path + '.' + ext;
-//         fs.renameSync(path, newPath);
-
-//         const coverUrl = `http://localhost:8080/uploads/${path.split('/').pop()}.png`;
-
-//         const { title, summary, content } = req.body;
-
-//         const postDoc = await Post.create({
-//             title, summary, content, cover: newPath
-//             // title, summary, content,newPath, cover: coverUrl
-//         });
-//         res.json({ ext, newPath});
-//     } catch (err) {
-//         console.log(`Error in creating post: ${err}`);
-//         res.status(500).json({ error: `Error in creating post: ${err}` });
-//     }
-// })
 
 // app.post('/post', uploadMiddleware.single('file'), async (req, res) => {
-//     try {
-//         const { originalname, path } = req.file;
-//         const parts = originalname.split('.');
-//         const ext = parts[parts.length - 1];  // Get the file extension
-//         const newPath = `${path}.${ext}`;    // Append the extension to the path
+//     const { originalname, path } = req.file;
+//     const parts = originalname.split('.');
+//     const ext = parts[parts.length - 1];
+//     const newPath = path + '.' + ext;
+//     fs.renameSync(path, newPath);
 
-//         fs.renameSync(path, newPath);        // Rename the file with the new path
-
-//         const coverUrl = `http://localhost:8080/uploads/${newPath.split('/').pop()}`;  // Properly generate the coverUrl
-
+//     const { token } = req.cookies;
+//     jwt.verify(token, secret, {}, async (err, info) => {
+//         if (err) throw err;
 //         const { title, summary, content } = req.body;
-
-//         // Save the post with the coverUrl
 //         const postDoc = await Post.create({
-//             title, summary, content, cover: coverUrl  // Save the coverUrl in the database
+//             title,
+//             summary,
+//             content,
+//             cover: newPath,
+//             author: info.id,
 //         });
-
 //         res.json(postDoc);
-//     } catch (err) {
-//         console.log(`Error in creating post: ${err}`);
-//         res.status(500).json({ error: `Error in creating post: ${err}` });
-//     }
+//     });
+
 // });
-
-// app.post('/post', uploadMiddleware.single('file'), async (req, res) => {
-//     try {
-//         const { originalname, path } = req.file;
-//         const parts = originalname.split('.');
-//         const ext = parts[parts.length - 1];  // Get the file extension
-//         const newPath = `${path}.${ext}`;    // Append the extension to the path
-
-//         fs.renameSync(path, newPath);        // Rename the file with the new path
-
-//         // Get only the file name, since express is serving files from `/uploads`
-//         const fileName = newPath.split('/').pop();  
-
-//         // Generate the correct URL for the file, which the browser can access.
-//         const coverUrl = `http://localhost:8080/uploads/${fileName}`; 
-
-//         const { title, summary, content } = req.body;
-
-//         // Save the post with the coverUrl, not the file system path
-//         const postDoc = await Post.create({
-//             title, summary, content, cover: coverUrl  // Save the coverUrl in the database
-//         });
-
-//         res.json(postDoc);
-//     } catch (err) {
-//         console.log(`Error in creating post: ${err}`);
-//         res.status(500).json({ error: `Error in creating post: ${err}` });
-//     }
-// });
-
-
-app.post('/post', uploadMiddleware.single('file'), async (req, res) => {
-    const { originalname, path } = req.file;
-    const parts = originalname.split('.');
-    const ext = parts[parts.length - 1];
-    const newPath = path + '.' + ext;
-    fs.renameSync(path, newPath);
-
-    const { token } = req.cookies;
-    jwt.verify(token, secret, {}, async (err, info) => {
-        if (err) throw err;
-        const { title, summary, content } = req.body;
-        const postDoc = await Post.create({
-            title,
-            summary,
-            content,
-            cover: newPath,
-            author: info.id,
-        });
-        res.json(postDoc);
-    });
-
-});
 
 
 
@@ -245,9 +170,9 @@ app.get('/post', async (req, res) => {
     try {
         res.json(
             await Post.find()
-            // .populate('author', ['username'])
-            // .sort({createdAt: -1})
-            // .limit(20)
+            .populate('author', ['username'])
+            .sort({createdAt: -1})
+            .limit(20)
         )
     } catch (err) {
         console.log(`Error in fetching posts: ${err}`);
@@ -257,8 +182,8 @@ app.get('/post', async (req, res) => {
 
 app.get('/post/:id', async (req, res) => {
     const { id } = req.params;
-    const postDoc = await Post.findById(id);
-    // .populate('author', ['username']);
+    const postDoc = await Post.findById(id)
+    .populate('author', ['username']);
     res.json(postDoc);
 })
 
